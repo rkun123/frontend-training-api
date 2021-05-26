@@ -11,13 +11,12 @@ import bcrypt
 import os
 
 # project key
-deta = Deta('c01jifyn_JnRrTsxwQmg7Uzw8beRTJN7CowUNhKQB')
+deta = Deta(os.environ.get('DETA_TOKEN', 'c01jifyn_JnRrTsxwQmg7Uzw8beRTJN7CowUNhKQB'))
 userDB = deta.Base('users')
 threadDB = deta.Base('threads')
 postDB = deta.Base('posts')
 
 salt = os.environ.get('PASSWORD_HASH_SALT', '$2a$10$ThXfVCPWwXYx69U8vuxSUu').encode()
-print('salt', salt)
 
 def genID():
   return str(uuid4())
