@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+uvicorn = "*"
+deta = "*"
+bcrypt = "*"
+more-itertools = "*"
+pyjwt = "*"
+asyncio = "*"
+requests = "*"
+
+[dev-packages]
+pylint = "*"
+pydantic = "*"
+pytest = "*"
+
+[requires]
+python_version = "3.9"
