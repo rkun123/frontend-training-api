@@ -1,13 +1,13 @@
 from fastapi import APIRouter
 from typing import List, Dict
-from schemas import SignupPayload, SigninPayload, Thread, User
+from schemas import SignupPayload, SigninPayload, Thread, UserWithoutPassWord
 from cruds import createUser, createThread, listThread
 from jwt_token import generateToken
 
 r = APIRouter()
 
 @r.post('/auth/signup')
-async def signup(payload: SignupPayload) -> User:
+async def signup(payload: SignupPayload) -> UserWithoutPassWord:
   user = createUser(payload)
   return user
 

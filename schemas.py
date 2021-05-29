@@ -6,7 +6,7 @@ from datetime import datetime
 def now_timestamp() -> float:
   return datetime.now().timestamp()
 
-class User(BaseModel):
+class UserWithoutPassWord(BaseModel):
   key: Optional[str]
   name: str
   email: str
@@ -14,7 +14,10 @@ class User(BaseModel):
   created_at: float = Field(default_factory=now_timestamp)
   updated_at: float = Field(default_factory=now_timestamp)
   key: Optional[str]
+
+class User(UserWithoutPassWord):
   password_hash: Optional[str]
+  
 
 class CreateThreadPayload(BaseModel):
   name: str
@@ -23,6 +26,7 @@ class Thread(BaseModel):
   key: Optional[str]
   name: str
   author_key: str
+  author: Optional[UserWithoutPassWord]
   created_at: float = Field(default_factory=now_timestamp)
   updated_at: float = Field(default_factory=now_timestamp)
 
@@ -33,6 +37,7 @@ class CreatePostPayload(BaseModel):
 class Post(BaseModel):
   key: Optional[str]
   author_key: str
+  author: Optional[UserWithoutPassWord]
   thread_key: str
   content: str
   created_at: float = Field(default_factory=now_timestamp)

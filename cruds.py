@@ -5,7 +5,7 @@ from schemas import CreatePostPayload, CreateThreadPayload, Post, User, SigninPa
 from uuid import uuid4
 from more_itertools import ilen
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 import jwt
 import bcrypt
 import os
@@ -60,12 +60,12 @@ def getUserByEmail(email: str) -> User:
   
   return User(**users[0])
 
-def getUserById(key: str) -> User:
-  users = list(userDB.fetch(key))[0]
-  if len(users) >= 1:
+def getUserByKey(key: str) -> User:
+  user = userDB.get(key)
+  if user == None:
     raise HTTPException(status_code=401, detail='User not found')
   
-  return User(**users[0])
+  return User(**user)
 
 # Threads
 
@@ -98,7 +98,13 @@ def listThread(limit: int = 10, page: int = 1) -> List[Thread]:
     except StopIteration:
       raise HTTPException(status_code=404, detail='specified page is out of range')
   
-  threads = list(map(lambda t: Thread(**t), thread_dicts))
+  def parse_thread(thread_dict: Dict[str, str]) -> Thread:
+    t = Thread(**thread_dict)
+    user = getUserByKey(t.author_key)
+    t.author = user
+    return t
+  
+  threads = list(map(parse_thread, thread_dicts))
   return threads
 
 def createPost(payload: CreatePostPayload, user: User) -> Post:
@@ -115,6 +121,12 @@ def listPosts(thread: Thread, limit: int = 10, page: int = 1) -> List[Post]:
       post_dicts = next(post_iter)
     except StopIteration:
       raise HTTPException(status_code=404, detail='specified page is out of range')
+
+  def parse_post(post_dict: Dict[str, str]) -> Post:
+    p = Post(**post_dict)
+    user = getUserByKey(p.author_key)
+    p.author = user
+    return p
   
-  posts = list(map(lambda t: Post(**t), post_dicts))
+  posts = list(map(parse_post, post_dicts))
   return posts
