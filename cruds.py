@@ -12,9 +12,11 @@ import os
 
 # project key
 deta = Deta(os.environ.get('DETA_TOKEN', 'c01jifyn_JnRrTsxwQmg7Uzw8beRTJN7CowUNhKQB'))
-userDB = deta.Base('users')
-threadDB = deta.Base('threads')
-postDB = deta.Base('posts')
+test_prefix = os.environ.get('PYTHON_ENV', '')
+
+userDB = deta.Base(f'{test_prefix}users')
+threadDB = deta.Base(f'{test_prefix}threads')
+postDB = deta.Base(f'{test_prefix}posts')
 
 salt = os.environ.get('PASSWORD_HASH_SALT', '$2a$10$ThXfVCPWwXYx69U8vuxSUu').encode()
 
