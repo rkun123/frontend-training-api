@@ -6,6 +6,7 @@ from uuid import uuid4
 from more_itertools import ilen
 from datetime import datetime
 from typing import List, Optional, Dict
+from operator import itemgetter
 import jwt
 import bcrypt
 import os
@@ -114,13 +115,17 @@ def createPost(payload: CreatePostPayload, user: User) -> Post:
   return post
   
 def listPosts(thread: Thread, limit: int = 10, page: int = 1) -> List[Post]:
-  post_iter = postDB.fetch({ 'thread_key': thread.key }, pages=page, buffer=limit)
-  post_dicts = []
-  for i in range(page):
-    try:
-      post_dicts = next(post_iter)
-    except StopIteration:
-      raise HTTPException(status_code=404, detail='specified page is out of range')
+  post_iter = postDB.fetch({ 'thread_key': thread.key })
+  all_posts = list(post_iter)[0]
+  all_posts = sorted(all_posts, key=itemgetter('created_at'), reverse=True)
+  start = limit * (page - 1)
+  end = start + limit
+  s = slice(start, end)
+
+  if len(all_posts) <= limit * (page - 1):
+    raise HTTPException(status_code=404, detail='specified page is out of range')
+
+  post_dicts = all_posts[s]
 
   def parse_post(post_dict: Dict[str, str]) -> Post:
     p = Post(**post_dict)
