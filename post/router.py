@@ -29,4 +29,7 @@ async def list_posts(limit: int = 10, page: int = 1, thread_key: str = ''):
 
 @r.delete('/posts/{post_key}')
 async def delete_post(post_key: str = '', user: User = Depends(get_current_user)):
+  if user == None:
+    raise HTTPException(401, 'Token decode error')
+
   deletePost(post_key, user)
