@@ -29,20 +29,20 @@ def create_random_user() -> Dict[str, str]:
          'password': password
       }
 
-def sign_in() -> str:
+def sign_in(email: str = 'test@example.com', password: str = 'testpassword') -> str:
    c = get_client()
 
    # create test user
    c.post('/api/v1/auth/signup', json={
       'name': 'test_user',
-      'email': 'test@example.com',
-      'password': 'testpassword',
+      'email': email,
+      'password': password,
       'description': 'test_description'
    })
    
    res = c.post('/api/v1/auth/signin', json={
-      'email': 'test@example.com',
-      'password': 'testpassword'
+      'email': email,
+      'password': password
    })
    if res.status_code == 200:
       return res.json()['jwt']

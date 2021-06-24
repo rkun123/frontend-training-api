@@ -48,3 +48,53 @@ def test_list_posts():
   posts = res.json()
   print(res.json())
   assert len(posts) >= 1
+
+def test_delete_posts():
+  token = sign_in()
+  thread = create_random_thread(token)
+  post = create_post(thread_key=thread.key)
+  post = create_post(thread_key=thread.key)
+
+  res = client.get(f'/api/v1/threads/{thread.key}/posts')
+
+  assert res.status_code == 200
+
+  assert len(res.json()) == 2
+
+  res = client.delete(f'/api/v1/posts/{post.key}', headers={'jwt-token': "Bearer {}".format(token)})
+
+  assert res.status_code == 200
+
+  res = client.get(f'/api/v1/threads/{thread.key}/posts')
+
+  assert res.status_code == 200
+
+  posts = res.json()
+
+  assert len(posts) == 1
+
+
+def test_delete_unowned_posts_should_be_rejected():
+  token = sign_in()
+  another_user_token = sign_in(email='test2@example.com', password='testpassword2')
+  thread = create_random_thread(token)
+  post = create_post(thread_key=thread.key)
+  post = create_post(thread_key=thread.key)
+
+  res = client.get(f'/api/v1/threads/{thread.key}/posts')
+
+  assert res.status_code == 200
+
+  assert len(res.json()) == 2
+
+  res = client.delete(f'/api/v1/posts/{post.key}', headers={'jwt-token': "Bearer {}".format(another_user_token)})
+
+  assert res.status_code == 401
+
+  res = client.get(f'/api/v1/threads/{thread.key}/posts')
+
+  assert res.status_code == 200
+
+  posts = res.json()
+
+  assert len(posts) == 2

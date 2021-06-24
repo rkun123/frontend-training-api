@@ -113,7 +113,17 @@ def createPost(payload: CreatePostPayload, user: User) -> Post:
   post_dict = postDB.put(post.dict(exclude_none=True))
   post = Post(**post_dict)
   return post
+
+def deletePost(post_key: str, user: User):
+  post = postDB.get(post_key)
+  post = Post(**post)
+  post.author = getUserByKey(post.author_key)
+  print(post)
+  if post.author.key != user.key:
+    raise HTTPException(status_code=401, detail='deleting specified post is not permitted')
   
+  postDB.delete(post_key) 
+
 def listPosts(thread: Thread, limit: int = 10, page: int = 1) -> List[Post]:
   post_iter = postDB.fetch({ 'thread_key': thread.key })
   all_posts = list(post_iter)[0]
