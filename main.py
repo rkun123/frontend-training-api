@@ -5,7 +5,7 @@ from post.router import r as post_router
 from user.router import r as user_router
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+app = FastAPI(title='Kashiwa Onigiri 🍙')
 
 app.add_middleware(
     CORSMiddleware,
